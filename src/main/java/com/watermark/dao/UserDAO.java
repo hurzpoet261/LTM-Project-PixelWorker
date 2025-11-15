@@ -31,7 +31,7 @@ public class UserDAO {
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getUsername());
-            ps.setString(2, user.getPassword()); // Trong dự án thật, hãy hash password!
+            ps.setString(2, user.getPassword()); 
             return ps.executeUpdate() > 0;
         }
     }

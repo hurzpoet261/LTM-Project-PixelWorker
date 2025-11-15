@@ -11,15 +11,31 @@ import java.util.List;
 
 public class ImageJobDAO {
 
+    public ImageJob getJobById(int jobId) throws SQLException {
+        String sql = "SELECT * FROM image_jobs WHERE id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, jobId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToImageJob(rs);
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean createJob(ImageJob job) throws SQLException {
-        String sql = "INSERT INTO image_jobs (user_id, original_filename, original_path, status, created_at) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO image_jobs (user_id, job_type, job_params, input_filename, input_path, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, job.getUserId());
-            ps.setString(2, job.getOriginalFilename());
-            ps.setString(3, job.getOriginalPath());
-            ps.setString(4, job.getStatus());
-            ps.setTimestamp(5, job.getCreatedAt());
+            ps.setString(2, job.getJobType());
+            ps.setString(3, job.getJobParams());
+            ps.setString(4, job.getInputFilename());
+            ps.setString(5, job.getInputPath());
+            ps.setString(6, job.getStatus());
+            ps.setTimestamp(7, job.getCreatedAt());
             return ps.executeUpdate() > 0;
         }
     }
@@ -32,15 +48,7 @@ public class ImageJobDAO {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    ImageJob job = new ImageJob();
-                    job.setId(rs.getInt("id"));
-                    job.setUserId(rs.getInt("user_id"));
-                    job.setOriginalFilename(rs.getString("original_filename"));
-                    job.setOriginalPath(rs.getString("original_path"));
-                    job.setWatermarkedPath(rs.getString("watermarked_path"));
-                    job.setStatus(rs.getString("status"));
-                    job.setCreatedAt(rs.getTimestamp("created_at"));
-                    jobs.add(job);
+                    jobs.add(mapResultSetToImageJob(rs));
                 }
             }
         }
@@ -52,21 +60,16 @@ public class ImageJobDAO {
         String sqlUpdate = "UPDATE image_jobs SET status = 'PROCESSING' WHERE id = ?";
         
         try (Connection conn = Database.getConnection()) {
-            conn.setAutoCommit(false); // Bắt đầu transaction
+            conn.setAutoCommit(false);
             try (PreparedStatement psSelect = conn.prepareStatement(sqlSelect)) {
                 ResultSet rs = psSelect.executeQuery();
                 if (rs.next()) {
-                    ImageJob job = new ImageJob();
-                    job.setId(rs.getInt("id"));
-                    job.setUserId(rs.getInt("user_id"));
-                    job.setOriginalFilename(rs.getString("original_filename"));
-                    job.setOriginalPath(rs.getString("original_path"));
+                    ImageJob job = mapResultSetToImageJob(rs);
                     
                     try (PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate)) {
                         psUpdate.setInt(1, job.getId());
                         psUpdate.executeUpdate();
                     }
-                    
                     conn.commit();
                     return job;
                 }
@@ -78,14 +81,30 @@ public class ImageJobDAO {
         return null;
     }
 
-    public void updateJobStatus(int jobId, String status, String watermarkedPath) throws SQLException {
-        String sql = "UPDATE image_jobs SET status = ?, watermarked_path = ? WHERE id = ?";
+    public void updateJobStatus(int jobId, String status, String outputPath, String outputFilename) throws SQLException {
+        String sql = "UPDATE image_jobs SET status = ?, output_path = ?, output_filename = ? WHERE id = ?";
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
-            ps.setString(2, watermarkedPath);
-            ps.setInt(3, jobId);
+            ps.setString(2, outputPath);
+            ps.setString(3, outputFilename);
+            ps.setInt(4, jobId);
             ps.executeUpdate();
         }
+    }
+
+    private ImageJob mapResultSetToImageJob(ResultSet rs) throws SQLException {
+        ImageJob job = new ImageJob();
+        job.setId(rs.getInt("id"));
+        job.setUserId(rs.getInt("user_id"));
+        job.setJobType(rs.getString("job_type"));
+        job.setJobParams(rs.getString("job_params"));
+        job.setInputFilename(rs.getString("input_filename"));
+        job.setInputPath(rs.getString("input_path"));
+        job.setOutputPath(rs.getString("output_path"));
+        job.setOutputFilename(rs.getString("output_filename"));
+        job.setStatus(rs.getString("status"));
+        job.setCreatedAt(rs.getTimestamp("created_at"));
+        return job;
     }
 }

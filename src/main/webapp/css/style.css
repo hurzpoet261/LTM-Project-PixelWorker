@@ -1,0 +1,103 @@
+/* --- Cài đặt chung --- */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 20px;
+}
+.container {
+    width: 80%;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+h1, h2, h3 {
+    color: #333;
+    text-align: center;
+}
+
+/* --- Tùy chỉnh Form --- */
+form {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px; 
+}
+form input[type="text"],
+form input[type="password"],
+form input[type="file"],
+form input[type="number"],
+form select {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: white;
+}
+form label {
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: -5px;
+}
+.job-params-group {
+    display: none;
+    flex-direction: column;
+    gap: 15px; 
+}
+
+/* --- Tùy chỉnh Nút bấm (Button) --- */
+form input[type="submit"],
+a.button {
+    background-color: #007bff; 
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none; 
+}
+form input[type="submit"]:hover,
+a.button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Tùy chỉnh Bảng (Trang history) --- */
+table {
+    width: 100%;
+    border-collapse: collapse; 
+    margin-top: 20px;
+}
+table th, table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* --- Style cho các ô trạng thái --- */
+.status-pending {
+    color: #ffc107; /* Vàng */
+    font-weight: bold;
+}
+.status-processing {
+    color: #007bff; /* Xanh dương */
+    font-weight: bold;
+}
+.status-completed {
+    color: #28a745; /* Xanh lá */
+    font-weight: bold;
+}
+.status-failed {
+    color: #dc3545; /* Đỏ */
+    font-weight: bold;
+}

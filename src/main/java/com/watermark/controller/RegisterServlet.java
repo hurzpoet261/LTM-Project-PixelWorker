@@ -17,7 +17,7 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = new User();
         user.setUsername(request.getParameter("username"));
-        user.setPassword(request.getParameter("password")); // Nhớ hash
+        user.setPassword(request.getParameter("password")); 
 
         try {
             userDAO.createUser(user);
